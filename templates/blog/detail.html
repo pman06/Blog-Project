@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}<h1>{{ post }}</h1> {% endblock %}
+{% block content %}
+  <p>Posted {{ post.date|date:"M j, Y" }}</p>
+
+  <p>Updated {{ post.updated }}</p>
+
+  {% if post.author %}<p>{{ post.author }}</p> {% endif %}
+
+  <p>{{ post.body }}</p>
+{% endblock %}

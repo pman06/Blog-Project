@@ -1,15 +1,19 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
     <title>Site</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=01">
   </head>
   <body>
     <ul class="menu">
-      <li><a href="{% url 'blog:home' %}">Home</a> </li>
+      <li><a class="{% if section == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a> </li>
+      <li><a href="#">About</a> </li>
+      <li><a href="{% url 'blog:create' %}" class="{% if section == 'blog_create' %}active{% endif %}">Add new post</a> </li>
     </ul>
 
-    {% block title %}    {% endblock %}
+    {% block title %}{% endblock %}
     <p>{% block content %}Some default contents{% endblock %}</p>
   </body>
 </html>
