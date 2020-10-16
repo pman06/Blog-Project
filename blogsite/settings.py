@@ -39,8 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'blog.apps.BlogConfig',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount'
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -124,3 +129,6 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATICFILES_DIR,
 
 ]
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
