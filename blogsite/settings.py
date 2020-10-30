@@ -39,12 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'blog.apps.BlogConfig',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount'
+    'taggit',
+    'imagekit',
 ]
+
 
 
 MIDDLEWARE = [
@@ -70,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'blog.context_processors.latest_posts'
             ],
         },
     },
@@ -126,9 +126,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [STATICFILES_DIR,
-
-]
+STATICFILES_DIRS = [STATICFILES_DIR,]
 
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/login'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR/'media'
+
+
+LOGOUT_REDIRECT_URL = '/'

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+
+{% block signin %}
+{% if not user.is_authenticated %}
+<li class="nav-item active">
+  <a class="nav-link" href="{% url 'account_login' %}"><i class="fas fa-user"></i></a>
+</li>
+{% else %}
+  {% if perms.blog.add_post %}
+    <li class="{% if section == 'blog_create' %}active{% endif %}">
+      <a class="nav-link" href="{% url 'blog:create' %}" class="nav-item">Add new post</a>
+    </li>
+  {% endif %}
+  <li class="nav-item">
+    <a class="nav-link {% if section == 'draft_posts' %}active{% endif %}" href="{% url 'blog:post_draft_list' %}" class="nav-item">Drafts</a>
+  </li>
+  <li class="nav-item active">
+    <a class="nav-link" href="{% url 'account_logout' %}">Signout</a>
+  </li>
+{% endif %}
+
+{% endblock %}
+
+{% block content %}
+
+<div class="jumbotron">
+
+  <h1>Sign in:</h1>
+  
+  <form class="login" method="POST" action="{% url 'account_login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if redirect_field_value %}
+    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+    {% endif %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="primaryAction" type="submit">Sign in</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,19 +1,34 @@
-.menu{
-  list-style : none;
-  padding-left : 0;
+
+
+.techfont{
+  font-family: 'Russo One', sans-serif;
+  font-size: 1.5em
+
 }
 
-.menu > li{
-  display : inline-block;
+.bigbrand{
+  font-size : 1.5em
+
 }
 
-.menu > li > a {
-  text-decoration: none;
-  color : #000;
-  margin : 0 0.3em;
+.center-post{
+  margin : auto;
 }
 
-.menu > li > a.active{
-  padding-bottom : 0.3em;
-  border-bottom : 2px solid #528DEA;
+.postdte{
+  text-align:center;
+}
+
+.posttitle{
+  font-family:'Russo One', sans-serif;
+  font-size: 3em;
+  text-align: center;
+}
+.postcontent{
+  font-family: 'Montserrat' ;
+  font-size: 1.5em
+}
+.btn-comment{
+  position: absolute;
+  right: 0px;
 }

@@ -4,23 +4,83 @@
   <head>
     <meta charset="utf-8">
     <title>Site</title>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=01">
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <!--Fontawesome-->
+    <script src="https://kit.fontawesome.com/6bccc1c604.js" crossorigin="anonymous"></script>
+
+    <!-- Medium Style Editor -->
+    <script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Russo+One&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v4.1 ">
+
   </head>
   <body>
-    <ul class="menu">
-      <li><a class="{% if section == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a> </li>
-      <li><a href="#">About</a> </li>
-      <li><a href="{% url 'blog:create' %}" class="{% if section == 'blog_create' %}active{% endif %}">Add new post</a> </li>
-      <li>
-        {% if not user.is_authenticated %}
-          <a href="{% url 'account_login' %}">Signin</a>
-        {% else %}
-          <a href="{% url 'account_logout' %}">Signout</a>
-        {% endif %}
-      </li>
-    </ul>
+    <!-- Nav Bar -->
 
-    {% block title %}{% endblock %}
-    <p>{% block content %}Some default contents{% endblock %}</p>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light techfont ">
+      <a class="navbar-brand bigbrand" href="{% url 'home' %}">Logo</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item  {% if section == 'home' %}active{% endif %}"><a class="nav-link" href="{% url 'home' %}">Home</a> </li>
+          <li class="nav-item {% if section == 'about' %}active{% endif %}"><a class="nav-link" href="{% url 'about' %}">About</a> </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+          {% block signin %}
+              {% if not user.is_authenticated %}
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account_login' %}"><i class="fas fa-user" >Login</i></a>
+              </li>
+              {% else %}
+                {% if perms.blog.add_post %}
+                  <li class="nav-item {% if section == 'blog_create' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'blog:create' %}" class="nav-item">New post</a>
+                  </li>
+                {% endif %}
+                <li class="nav-item {% if section == 'draft' %}active{% endif %}">
+                  <a class="nav-link" href="{% url 'blog:post_draft_list' %}" class="nav-item">Drafts</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'account_logout' %}">Signout</a>
+                </li>
+                <li>
+                  <a class="nav-link welcome"> Welcome {{ user.username }}</a>
+                </li>
+              {% endif %}
+
+          {% endblock %}
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-9">
+          <div class="blog-posts">
+            {% block content %}{% endblock %}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!--  {% include "blog/_post_list.html" with heading='Latest posts' %}-->
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
   </body>
 </html>

@@ -1,11 +1,66 @@
 {% extends "base.html" %}
 {% block title %}<h1>{{ post }}</h1> {% endblock %}
 {% block content %}
-  <p>Posted {{ post.date|date:"M j, Y" }}</p>
+  {% if post.image %}
+    <img class="post-img" src="{{ post.image_thumbnail.url }}" alt="Post image">
+  {% endif %}
+  <div class="posttitle">
+    <h1>{{ post.title }}</h1>
+  </div>
+  <div class="date postdate">
+    {% if post.published_date %}
+        <p>Published on: {{ post.published_date }}</p><!--|date:"M j, Y"-->
+    {% else %}
+      <a class="btn btn-success b-3" href="{% url 'blog:post_publish' pk=post.pk %}">Publish</a>
+    {% endif %}
+  </div>
 
-  <p>Updated {{ post.updated }}</p>
+  <p>Updated {{ post.updated_date }}</p>
 
-  {% if post.author %}<p>{{ post.author }}</p> {% endif %}
+  {% if post.author %}<p>By: {{ post.author }}</p> {% endif %}
 
-  <p>{{ post.body }}</p>
+  <div class="postcontent">
+    <p>{{ post.body|safe|linebreaksbr }}</p>
+    {% if post.tags %}
+      <div class="tags">
+        {% for tag in post.tags.all %}
+          <a href="{% url 'blog:post_by_tag' tag.slug %}">{{ tag }}</a>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+
+
+  {% if user.is_authenticated %}
+    {% if perms.blog.change_post %}
+      <a href="{% url 'blog:edit' post.pk %}">Edit<i class="fas fa-pencil-alt fa-lg"></i></a>
+    {% endif %}
+    {% if perms.blog.delete_post %}
+      <a href="{% url 'blog:delete' post.pk %}">Delete<i class="far fa-trash-alt fa-lg"></i></a>
+    {% endif %}
+  {% endif %}
+  <hr>
+
+  <a id="comment" class="btn btn-success btn-comment"  href="{% url 'blog:add_comment_to_post' pk=post.pk %}">Add Comment</a>
+
+  <div class="container">
+    {% for comment in post.comments.all %}
+    <br>
+
+      {% if user.is_authenticated or comment.approved_comment  %}
+        {{ comment.created_date }}
+        {% if perms.blog.delete_comment %}
+          {% if not comment.approved_comment %}
+          <a class="btn btn-success btn-comment" href="{% url 'blog:comment_approve' pk=comment.pk %}"><i class="fas fa-check fa-lg"></i></a>
+          <a class="btn btn-danger btn-comment" href="{% url 'blog:comment_remove' pk=comment.pk %}"><i class="far fa-trash-alt fa-lg"></i></a>
+          {% endif %}
+        {% endif %}
+
+        <p>{{ comment.text|safe|linebreaks }}</p>
+        <p>Posted By: {{ comment.author }}</p>
+      {% endif %}
+      {% empty %}
+      <p>No comment</p>
+    {% endfor %}
+  </div>
 {% endblock %}
