@@ -29,7 +29,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+SITE_ID = 1
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
     'blog.apps.BlogConfig',
     'taggit',
     'imagekit',
@@ -128,7 +130,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [STATICFILES_DIR,]
 
-SITE_ID = 1
+
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/login'
 
@@ -137,3 +139,10 @@ MEDIA_ROOT = BASE_DIR/'media'
 
 
 LOGOUT_REDIRECT_URL = '/'
+
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'youremail@gmail.com'
+EMAIL_HOST_PASSWORD = 'youremailpassword'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

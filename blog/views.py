@@ -1,14 +1,15 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.db.models import Count
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import (ListView, TemplateView, DetailView,
                                 CreateView, UpdateView, DeleteView)
-
+from django.core.mail import send_mail
 from .models import Post, Comment
-from .forms import PostForm, PostDeleteForm, CommentForm
+from .forms import PostForm, PostDeleteForm, CommentForm, EmailPostForm
 
 from taggit.models import Tag
 
@@ -24,12 +25,10 @@ class Home(ListView):
 
     def get_queryset(self):
         if self.kwargs.get('tag'):
-            print(self.kwargs.get('tag'))
             tag = self.kwargs.get('tag')
-            queryset = Post.objects.filter(tags__slug=tag, published_date__lte= timezone.now()).order_by('-published_date')
+            queryset = Post.objects.filter(tags__slug=tag, published_date__lte= timezone.now())
         else:
-            print('No tags')
-            queryset = Post.objects.filter(published_date__lte= timezone.now()).order_by('-published_date')
+            queryset = Post.objects.filter(published_date__lte= timezone.now())
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -62,6 +61,13 @@ class PostDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['section'] = 'blog_detail'
+        post = get_object_or_404(Post, slug=self.kwargs['slug'])
+        context['comments'] = post.approve_comments()
+
+        #get all similar posts
+        post_tags_ids = post.tags.values_list('id', flat=True)
+        similar_posts = Post.objects.filter(tags__in=post_tags_ids, published_date__lte= timezone.now()).exclude(id=post.id)
+        context['similar_posts'] = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags','-published_date')[:4]
         return context
 
 '''
@@ -103,8 +109,8 @@ def create(request):
 
 class PostEditView(LoginRequiredMixin,UpdateView):
     model = Post
-    #fields = ['title', 'body', 'image']
     template_name = 'blog/edit.html'
+    #fields = ['title', 'body', 'image']
     login_url = '/login/'
     redirect_field_name = '/'
     form_class = PostForm
@@ -211,4 +217,23 @@ def comment_remove(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
     post = comment.post
     comment.delete()
-    return redirect(post.get_absolute_url())#'blog:details', slug=post_slug)
+    return redirect(post.get_absolute_url())
+
+
+def post_share(request, id):
+    post = get_object_or_404(Post, id=id)
+    sent = False
+
+    if request.method == 'POST':
+        form = EmailPostForm(request.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            post_url = request.build_absolute_uri(post.get_absolute_url())
+            subject = f"{cd['name']} recommends you read {post.title}"
+            message = f"Read {post.title} at {post_url} \n \n {cd['name']}\'s comments:{cd['comments']}"
+            send = send_mail(subject, message, 'admin@myblog.com', [cd['to_email']])
+            print('Sent:  ',send)
+            sent = True
+    else:
+        form = EmailPostForm()
+    return render(request, 'blog/share.html', {'form':form, 'post':post, 'sent':sent})

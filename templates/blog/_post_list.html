@@ -1,13 +1,19 @@
-<div class="post-list">
-  <h2 class="post-list-heading">{{ heading }}</h2>
-  {% for post in latest_posts %}
-    <a href="{{ post.get_absolute_url }}" class="post-list-link {% cycle 'odd' 'even' %}">
-      <div class="post-list-date">
-        {{ post.date|date:"M j, Y"  }}
+<div class="post-list mt-5">
+  <h3 class="post-list-heading">{{ heading }}</h3>
+  <ul class="list-group">
+    {% for side_post in latest_posts %}
+    <li class="list-group-item {% cycle 'stripedA' 'stripedB' %} {% if post.title == side_post.title %}active text-white{% endif %}">
+      <div id="side_post" class="">
+        <a href="{{ side_post.get_absolute_url }}" class="post-list-link list-group-item-action flex-column">
+          <div class="post-list-title  d-flex w-100 justify-content-between ">
+            {{ side_post.title|truncatechars:15 }}
+            {# <div class="post-list-date mutted"> #}
+              <small>{{ side_post.published_date|date:"M, Y"}}</small>
+            {# </div> #}
+          </div>
+        </a>
       </div>
-      <div class="post-list-title">
-        {{ post.title|truncatechars:20 }}
-      </div>
-    </a>
-  {% endfor %}
+    </li>
+    {% endfor %}
+  </ul>
 </div>

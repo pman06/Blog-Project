@@ -8,18 +8,22 @@ from imagekit.models import ImageSpecField
 from pilkit.processors import ResizeToFill
 
 # Create your models here.
-class Post(models.Model):
 
-    author = models.ForeignKey(User, null=True,blank=True,on_delete= models.CASCADE)
+class Post(models.Model):
+    author = models.ForeignKey(User, on_delete= models.CASCADE, related_name="blog_posts")
     title = models.CharField(default='', max_length= 255)
     body = models.TextField(default='',blank=True,)
-    slug = models.SlugField(default='',blank=True, max_length= 255)
+    slug = models.SlugField(default='',blank=True, unique_for_date='published_date',max_length= 255)
     created_date = models.DateTimeField(auto_now_add=True, null=True)
     published_date =models.DateTimeField(blank=True, null=True)
     updated_date = models.DateTimeField(auto_now = True, null=True)
     tags = TaggableManager()
     image = models.ImageField(default ='',blank =True, upload_to='images')
-    image_thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(700,150)], format='JPEG', options={'quality':60})
+    image_thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(700,270)], format='JPEG', options={'quality':60})
+
+
+    class Meta:
+        ordering = ['-published_date']
 
     def published(self):
         self.published_date = timezone.now()

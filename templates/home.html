@@ -2,28 +2,39 @@
 {% block content %}
 
 {% if tag %}
-    <p>Posts tagged with <strong>{{ tag }}</strong> </p>
+    <h2>Posts tagged with: "<strong>{{ tag }}</strong>" </h2>
 {% endif %}
 
 
   {% for post in posts %}
-    <div class="center-post mb-5">
+  {# <div class="card-deck"> #}
 
-      <a href="{{ post.get_absolute_url }}"> {{ post }}</a>
-      {% if perms.blog.change_post %}
-      <a href="{% url 'blog:edit' post.pk %}"><i class="fas fa-pencil-alt fa-lg"></i></a>
+    <div class="center-post card mb-3">
+      {% if post.image %}
+      <img class="card-image-top post-img" src="{{ post.image_thumbnail.url }}" alt="Post image">
       {% endif %}
-      {% if perms.blog.delete_post %}
-      <a href="{% url 'blog:delete' post.pk %}"><i class="far fa-trash-alt fa-lg"></i></a>
-      {% endif %}
-      <br>
-      <div class="date">
-        <p>Published on: {{ post.published_date|date:"D M Y" }}</p>
-      </div>
-      <div class="comments">
-        <a href="{{ post.get_absolute_url }}">Comments: {% if post.approve_comments.count %}{{ post.approve_comments.count }}{% else %} 0{% endif %}</a>
+      <div class="card-body">
+
+        <h2 class="card-title"><a href="{{ post.get_absolute_url }}" class="card-link"> {{ post }}</a></h2>
+        {% if perms.blog.change_post %}
+        <a href="{% url 'blog:edit' post.pk %}"><i class="fas fa-pencil-alt fa-lg"></i></a>
+        {% endif %}
+        {% if perms.blog.delete_post %}
+        <a href="{% url 'blog:delete' post.pk %}"><i class="far fa-trash-alt fa-lg"></i></a>
+        {% endif %}
+
+        <div class="date card-subtitle mb-2 text-muted">
+          <p>Published on: {{ post.published_date|date:"D M Y" }}</p>
+        </div>
+        <div class="excerpts card-text">
+          {{ post.body|safe|truncatewords_html:30 }}
+        </div>
+        <div class="comments card-footer text-muted">
+          <a href="{{ post.get_absolute_url }}">Comments: {% if post.approve_comments.count %}{{ post.approve_comments.count }}{% else %} 0{% endif %}</a>
+        </div>
       </div>
     </div>
+  {# </div> #}
   {% endfor %}
 
 

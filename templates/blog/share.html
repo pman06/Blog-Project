@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+{% if sent %}
+  <h1>E-mail successfully sent!</h1>
+  <p>"<a href="{{ post.get_absolute_url }}">{{ post.title }}</a>" was successfully sent to {{ form.cleaned_data.to_email }} </p>
+{% else %}
+  <h1>Share "{{ post.title }}" by e-mail.</h1>
+  {% if form.errors %}
+    {% for error in form.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form  %}
+      <div class="form-group">
+        {{ field.label_tag }}
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    <input type="submit" name="" value="Send email">
+  </form>
+{% endif %}
+{% endblock %}

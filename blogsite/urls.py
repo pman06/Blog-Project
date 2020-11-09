@@ -18,14 +18,20 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.sitemaps.views import sitemap
+from blog.sitemaps import PostSitemap
 import blog.views
 
+sitemaps={
+    'posts':PostSitemap
+}
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', blog.views.Home.as_view(), name ='home'),
     path('about/', blog.views.About.as_view(), name='about'),
-    path('blog/', include('blog.urls')),
+    path('blog/', include('blog.urls', namespace='blog')),
+    path('sitemap.xml', sitemap, {'sitemaps':sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('login/', LoginView.as_view(template_name="registration/login.html"  ), name='account_login'),
     path('logout/', LogoutView.as_view(), name='account_logout'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
