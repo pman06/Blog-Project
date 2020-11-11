@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.db.models import Count
+from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery, TrigramSimilarity
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
@@ -9,7 +10,7 @@ from django.views.generic import (ListView, TemplateView, DetailView,
                                 CreateView, UpdateView, DeleteView)
 from django.core.mail import send_mail
 from .models import Post, Comment
-from .forms import PostForm, PostDeleteForm, CommentForm, EmailPostForm
+from .forms import PostForm, PostDeleteForm, CommentForm, EmailPostForm, SearchForm
 
 from taggit.models import Tag
 
@@ -88,6 +89,10 @@ class CreatePostView(LoginRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['section'] = 'blog_create'
         return context
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 '''
 @permission_required('blog.add_post', raise_exception= True)
@@ -237,3 +242,16 @@ def post_share(request, id):
     else:
         form = EmailPostForm()
     return render(request, 'blog/share.html', {'form':form, 'post':post, 'sent':sent})
+
+def post_search(request):
+    form = SearchForm()
+    query = None
+    results = []
+    if 'query' in request.GET:
+        form = SearchForm(request.GET)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            search_vector = SearchVector('title', weight= 'A') + SearchVector('body', weight='B')
+            search_query = SearchQuery(query)
+            results = Post.objects.filter(published_date__lte=timezone.now()).annotate(similarity=TrigramSimilarity('title', query),).filter(similarity__gte=0.1).order_by('-similarity')
+    return render(request, 'blog/search.html', {'form':form,'query':query,'results':results})

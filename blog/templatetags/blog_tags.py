@@ -20,4 +20,7 @@ def post_include(count):
 @register.simple_tag
 def get_most_commentted_posts(count=5):
     total_comment = Post.objects.filter(published_date__lte=timezone.now()).annotate(total_comment= Count('comments')).order_by('-total_comment')[:count]
+    for comment in total_comment:
+        comment.total_comment = comment.approve_comments().count()
+    print(total_comment[0], ' has ',total_comment[0].total_comment)
     return total_comment

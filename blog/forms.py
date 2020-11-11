@@ -1,16 +1,16 @@
 from django import forms
 from .models import Post, Comment
+from taggit.forms import TagWidget
 
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'body','tags', 'slug','image']
+        fields = ['title', 'body','tags', 'image']
 
         widgets = {
             'title' : forms.TextInput(attrs={'class':'textinputclass form-control'}),
             'body' : forms.Textarea(attrs={'class':'editable medium-editor-textarea postcontent form-control'}),
-            'tags': forms.TextInput(attrs={'class':'form-control'}),
-            'slug': forms.TextInput(attrs={'class':'form-control'}),
+            'tags': TagWidget(attrs={'class':'form-control'}),
             'image': forms.ClearableFileInput(attrs={'class':'form-control-file'})
         }
 
@@ -34,3 +34,6 @@ class EmailPostForm(forms.Form):
     email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     to_email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'form-control'}))
     comments = forms.CharField(required=False, widget=forms.Textarea(attrs={'class': 'form-control'}))
+
+class SearchForm(forms.Form):
+    query = forms.CharField()

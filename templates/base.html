@@ -40,10 +40,14 @@
         </ul>
 
         <ul class="navbar-nav ml-auto">
+          <form class="form-inline my-2 my-lg-0" action="{% url 'blog:post_search' %}" method="get">
+            <input class="form-control mr-sm-2" type="search" name="query" value="">
+            <input class="btn btn-primary my-2 my-sm-0" type="submit" name="" value="Search">
+          </form>
           {% block signin %}
               {% if not user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'account_login' %}"><i class="fas fa-user" >Login</i></a>
+                <a class="nav-link" href="{% url 'account_login' %}"><i class="fas fa-user" ></i></a>
               </li>
               {% else %}
                 {% if perms.blog.add_post %}
@@ -89,11 +93,12 @@
           {% include "blog/_post_list.html" with heading='Latest posts' %}
            <!-- <h2>Another latest posts</h2>
           {% post_include 3%}  -->
-          <div class="">
+          <div class="mt-5">
             <h3>Most Commented Posts</h3>
             {% get_most_commentted_posts as most_commented_posts %}
+
             <ul class="list-group" >
-              {% for posts in most_commented_posts %}
+              {% for posts in most_commented_posts|dictsortreversed:"total_comment" %}
                 <li class="list-group-item {% cycle 'stripedA' 'stripedB' %} {% if post.title == posts.title %}active text-white{% endif %}">
                   <a href="{{ posts.get_absolute_url }}" class="post-list-link list-group-item-action flex-column">{{ posts }}</a>
                 </li>

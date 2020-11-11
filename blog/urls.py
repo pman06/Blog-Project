@@ -17,5 +17,6 @@ urlpatterns =[
     path('post/<int:pk>/publish/',views.post_publish, name='post_publish'),
     path('post/<int:id>/share', views.post_share, name = 'post_share'),
     path('feed/', LatestPostsFeed(), name='post_feed'),
+    path('search/', views.post_search, name='post_search'),
     path('<slug:slug>/', views.PostDetailView.as_view(), name = 'details'),
 ]
